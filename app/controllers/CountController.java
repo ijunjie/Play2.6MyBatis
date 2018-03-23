@@ -1,9 +1,7 @@
 package controllers;
 
-import module.domain.Computer;
-import module.domain.ComputerDaoImpl;
-import module.domain.OppDaoImpl;
-import module.domain.Opportunity;
+import dao.impl.OppDaoImpl;
+import entities.Opportunity;
 import play.mvc.Controller;
 import play.mvc.Result;
 import services.Counter;
@@ -38,16 +36,16 @@ public class CountController extends Controller {
      * requests by an entry in the <code>routes</code> config file.
      */
     public Result count() {
+        Opportunity opp = null;
+        try {
+            opp = oppDaoImpl.getById("V0-ZR6T7F5");
 
-
-        Opportunity opp = oppDaoImpl.getById("V0-ZR6T7F5");
-
-
-        System.out.println(opp.getId());
-        System.out.println(opp.getName());
-
-
-        return ok(Integer.toString(counter.nextCount()));
+            System.out.println(opp.getId());
+            System.out.println(opp.getName());
+            return ok("Opp name is :" + opp.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ok("welcome");
+        }
     }
-
 }

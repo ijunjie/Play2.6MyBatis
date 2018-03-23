@@ -28,27 +28,34 @@ under the License.
     <name>IBM ManagerForecast - RoadMap</name>
 
     <properties>
+        <junit.jupiter.version>5.0.1</junit.jupiter.version>
+        <junit.platform.version>1.0.1</junit.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <play2.version>2.6.12</play2.version>
+        <play2.version>2.6.6</play2.version>
         <scala.version>2.12.4</scala.version>
 
+        <akka.version>2.5.6</akka.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
 
-        <play2.plugin.version>1.0.0-rc3-SNAPSHOT</play2.plugin.version>
+        <play2.plugin.version>1.0.0-rc1</play2.plugin.version>
     </properties>
 
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.scala-lang</groupId>-->
+            <!--<artifactId>scala-library</artifactId>-->
+            <!--<version>${scala.version}</version>-->
+        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-guice -->
+
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-guice -->
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-guice</artifactId>
@@ -66,7 +73,7 @@ under the License.
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-jdbc_2.12</artifactId>
-            <version>2.6.12</version>
+            <version>${play2.version}</version>
         </dependency>
 
         <dependency>
@@ -109,25 +116,55 @@ under the License.
             <scope>runtime</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-http -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http_2.12</artifactId>
+            <version>10.0.10</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-stream -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream_2.12</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-http-core -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http-core_2.12</artifactId>
+            <version>10.0.10</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-jdbc_2.12</artifactId>
-            <version>2.6.12</version>
+            <version>${play2.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.play/play-jdbc-api -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-jdbc-api_2.12</artifactId>
-            <version>2.6.12</version>
+            <version>${play2.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.play/play-java-jdbc -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-java-jdbc_2.12</artifactId>
-            <version>2.6.12</version>
+            <version>${play2.version}</version>
         </dependency>
 
         <dependency>
@@ -184,8 +221,83 @@ under the License.
                 </configuration>
             </plugin>
 
+            <!-- Docker plugin-->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.20.1</version>
+                <configuration>
+                    <skip>true</skip>
+                    <images>
+                        <image>
+                            <name>%g/%a:%l</name>
+                            <build>
+                                <from>openjdk:8-jre-alpine</from>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <descriptorRef>artifact-with-dependencies</descriptorRef>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>com.spotify</groupId>-->
+                <!--<artifactId>docker-maven-plugin</artifactId>-->
+                <!--<version>0.4.13</version>-->
+                <!--<configuration>-->
+                    <!--&lt;!&ndash; 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 &ndash;&gt;-->
+                    <!--&lt;!&ndash; 详见：https://github.com/spotify/docker-maven-plugin    Invalid repository name ... only [a-z0-9-_.] are allowed&ndash;&gt;-->
+                    <!--<imageName>roadmap</imageName>-->
+                    <!--<baseImage>java</baseImage>-->
+                    <!--&lt;!&ndash;<dockerHost>http://localhost:2375</dockerHost>&ndash;&gt;-->
+                    <!--<entryPoint>-->
+                        <!--java -XX:+UnlockExperimentalVMOptions-->
+                        <!-- -XX:+UseCGroupMemoryLimitForHeap -cp '/maven/*'-->
+                        <!-- -Dhttp.address="0.0.0.0" -Dhttp.port="9000"-->
+                        <!--play.core.server.ProdServerStart-->
+                    <!--</entryPoint>-->
+                    <!--<resources>-->
+                        <!--<resource>-->
+                            <!--<targetPath>/</targetPath>-->
+                            <!--<directory>${project.build.directory}</directory>-->
+                            <!--<include>${project.build.finalName}.jar</include>-->
+                        <!--</resource>-->
+                    <!--</resources>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
 
 
+            <!-- docker plugin -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                    <images>
+                        <image>
+                            <name>%g/%a:%l</name>
+                            <build>
+                                <from>openjdk:8-jre-alpine</from>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <descriptorRef>artifact-with-dependencies</descriptorRef>
+                                </assembly>
+                                <entryPoint>
+                                    java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -cp '/maven/*' -Dhttp.address="0.0.0.0" -Dhttp.port="9000" play.core.server.ProdServerStart
+                                </entryPoint>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -248,5 +360,4 @@ under the License.
             </build>
         </profile>
     </profiles>
-
 </project>

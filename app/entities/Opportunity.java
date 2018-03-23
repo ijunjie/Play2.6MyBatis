@@ -1,4 +1,4 @@
-package module.domain;
+package entities;
 
 public class Opportunity {
 

@@ -1,12 +1,13 @@
-package module.domain;
+package dao.impl;
 
 import com.google.inject.Inject;
-import module.domain.mapper.OppMapper;
-
+import dao.OppDao;
+import entities.Opportunity;
+import mapper.OppMapper;
 import javax.inject.Singleton;
 
 @Singleton
-public class OppDaoImpl implements  OppDao {
+public class OppDaoImpl implements OppDao {
 
     @Inject
     private OppMapper mapper;
